@@ -37,6 +37,14 @@ class Rabbit(Model):
     @classmethod
     def get_weight_rabbit_range(cls, max_, min_):
         return [(x.name, x.weight, x) for x in cls.select() if min_ < x.weight < max_]
+        # return [(x.name, x.weight) for x in cls.select().where((130 > cls.weight) | (cls.weight > 120))]
+
+    # 兔子要按重量排序 最重的放在最前面 好吃
+    @classmethod
+    def sort_rabbit_weight(cls):
+        # 下面2条命令是等价的
+        # return [(x, x.name, x.weight) for x in cls.select().order_by(-cls.weight)]
+        return [(x, x.name, x.weight) for x in cls.select().order_by(cls.weight.desc())]
 
     # 都吃兔子了 必须得给他一个名字 记录下
     def __str__(self):
@@ -61,12 +69,13 @@ if __name__ == '__main__':
     db.connect()
     db.create_tables(Rabbit)
     [Rabbit(name='r' + str(x), weight=x, sex=1).save() for x in range(100, 200)]
-    r1 = Rabbit(name='Tom', sex=0, weight=100, height=168)
+    r1 = Rabbit(name='Tom', sex=0, weight=999, height=168)
     r1.save()
-    r1 = Rabbit(name='Tom1', sex=0, weight=100, height=168)
+    r1 = Rabbit(name='Tom1', sex=0, weight=998, height=168)
     r1.save()
     print(r1.get_rabbit_info())
     print(r1.get_non_sex_rabbit())
     print(r1.get_weight_rabbit(weight=100))
     print(r1.get_weight_rabbit_range(max_=150, min_=130))
     print(r1.get_rabbit_counts())
+    print(r1.sort_rabbit_weight())
